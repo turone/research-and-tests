@@ -34,10 +34,10 @@ const arr2 = new Set([
   'xlsx',
   'ico',
 ]);
-const res = Object.fromEntries(arr.entries());
+const ob = Object.fromEntries(arr.entries());
 
-function myFor(arr) {
-  for (let j = 0; j < 100_000_000; j++) {
+function forObjIn(arr) {
+  for (let j = 0; j < 1_000_000; j++) {
     arr.has('css');
     arr.has('xls');
     arr.has('ico');
@@ -47,7 +47,7 @@ function myFor(arr) {
   }
 }
 function myFor2(ob) {
-  for (let j = 0; j < 100_000_000; j++) {
+  for (let j = 0; j < 1_000_000; j++) {
     'css' in ob;
     'xls' in ob;
     'ico' in ob;
@@ -56,8 +56,18 @@ function myFor2(ob) {
     'png' in ob;
   }
 }
-function myFor3(ob) {
-  for (let j = 0; j < 100_000_000; j++) {
+function forObjProtoHas(ob) {
+  for (let j = 0; j < 1_000_000; j++) {
+    Object.prototype.hasOwnProperty.call(ob, 'css');
+    Object.prototype.hasOwnProperty.call(ob, 'xls');
+    Object.prototype.hasOwnProperty.call(ob, 'ico');
+    Object.prototype.hasOwnProperty.call(ob, 'xlsx');
+    Object.prototype.hasOwnProperty.call(ob, 'css2');
+    Object.prototype.hasOwnProperty.call(ob, 'png');
+  }
+}
+function forObjHas(ob) {
+  for (let j = 0; j < 1_000_000; j++) {
     ob.hasOwnProperty('css');
     ob.hasOwnProperty('xls');
     ob.hasOwnProperty('ico');
@@ -1514,41 +1524,46 @@ function myForSet2(arr) {
   arr.has('ico');
 }
 function myFor4(arr) {
-  for (let j = 0; j < 100_000_000; j++) {
+  for (let j = 0; j < 1_000_000; j++) {
     myForSet(arr);
     myForSet(arr2);
   }
 }
 function myFor5(arr) {
-  for (let j = 0; j < 100_000_000; j++) {
+  for (let j = 0; j < 1_000_000; j++) {
     myForSet2(arr);
     myForSet2(arr2);
     myForSet(arr2);
   }
 }
 for (let c = 0; c < 5; c++) {
-  console.time('for');
-  myFor(arr);
-  console.timeEnd('for'); // ~5000ms
+  console.time('has');
+  forObjIn(arr);
+  console.timeEnd('has'); // ~5000ms
 }
 for (let c = 0; c < 5; c++) {
-  console.time('for2');
-  myFor2(arr);
-  console.timeEnd('for2'); // ~5000ms
-}
-for (let c = 0; c < 1; c++) {
-  console.time('for3');
-  myFor3(arr);
-  console.timeEnd('for3'); // ~5000ms
+  console.time('in');
+  myFor2(ob);
+  console.timeEnd('in'); // ~5000ms
 }
 for (let c = 0; c < 5; c++) {
-  console.time('for4');
+  console.time('hasOwnProperty');
+  forObjProtoHas(ob);
+  console.timeEnd('hasOwnProperty'); // ~5000ms
+}
+for (let c = 0; c < 5; c++) {
+  console.time('hasOwnProperty');
+  forObjHas(ob);
+  console.timeEnd('hasOwnProperty'); // ~5000ms
+}
+/*for (let c = 0; c < 5; c++) {
+  console.time('has in set arr+arr2');
   myFor4(arr);
-  console.timeEnd('for4'); // ~5000ms
+  console.timeEnd('has in set arr+arr2'); // ~5000ms
 }
 for (let c = 0; c < 5; c++) {
-  console.time('for5');
+  console.time('has in set arr+arr2+arr2');
   myFor5(arr);
-  console.timeEnd('for5'); // ~5000ms
+  console.timeEnd('has in set arr+arr2+arr2'); // ~5000ms
 }
-//console.log(res);
+//console.log(res);*/
