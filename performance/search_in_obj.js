@@ -51,12 +51,12 @@ function forObjHas(ob) {
 }
 function forObjProp(ob) {
   for (let j = 0; j < 1_000_000; j++) {
-    ob.css;
-    ob.xls;
-    ob.ico;
-    ob.noExist;
-    ob.css2;
-    ob.png;
+    ob['css'];
+    ob['xls'];
+    ob['ico'];
+    ob['noExist'];
+    ob['css2'];
+    ob['png'];
   }
 }
 function forObjOptChain(ob) {
