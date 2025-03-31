@@ -19,7 +19,7 @@ const set12 = new Set([
 ]);
 const ob = Object.fromEntries(set12.entries());
 
-function forObjIn(ob) {
+function hasInSet(ob) {
   for (let j = 0; j < 1_000_000; j++) {
     'css' in ob;
     'xls' in ob;
@@ -71,7 +71,7 @@ function forObjOptChain(ob) {
 }
 for (let c = 0; c < 5; c++) {
   console.time('in');
-  forObjIn(ob);
+  hasInSet(ob);
   console.timeEnd('in'); // ~5000ms
 }
 for (let c = 0; c < 5; c++) {
