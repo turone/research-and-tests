@@ -15,5 +15,7 @@ module.exports = {
   output: {
     sortField: 'density',
     sortType: 'desc',
+    filePath: './output/',
+    type: 'json',
   },
 };
