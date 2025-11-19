@@ -18,7 +18,7 @@ const jsonParse = (data) => {
 const csvParse = (data, options = {}) => {
   if (data?.length === 0) return null;
   let currentPosition = 0;
-  let lineBreak = null;
+  let lineBreak;
   if (data.includes('\r\n')) {
     lineBreak = '\r\n';
   } else if (data.includes('\n')) {
@@ -45,12 +45,9 @@ const csvParse = (data, options = {}) => {
       results.push(objCells);
     } catch (error) {
       console.error('Error parsing row:', error);
-      return;
     }
   };
-  if (!firstRowField) {
-    void rowToResult(firstRow);
-  }
+  if (!firstRowField) rowToResult(firstRow);
   currentPosition += lineBreak.length;
   let lineCount = 1;
   while (currentPosition < data.length) {
@@ -61,22 +58,19 @@ const csvParse = (data, options = {}) => {
       .slice(currentPosition, nextLineBreak)
       .split(delimeter)
       .map((field) => field.trim());
-    void rowToResult(row);
+    rowToResult(row);
     currentPosition = nextLineBreak + lineBreak.length;
     lineCount += 1;
     if (readLines && lineCount >= readLines) break;
   }
   return results.length ? results : null;
 };
-const createReduceProxy = (reduceFn, field) => {
-  return new Proxy(reduceFn, {
-    apply(target, thisArg, args) {
-      const [acc, value, ...rest] = args;
-      const modifiedValue =
-        field && value && value[field] !== undefined ? value[field] : value;
-      return Reflect.apply(target, thisArg, [acc, modifiedValue, ...rest]);
-    },
-  });
+const createReduceFieldWrapper = (reduceFn, field) => {
+  return (acc, value, ...rest) => {
+    const modifiedValue =
+      field && value && value[field] !== undefined ? value[field] : value;
+    return reduceFn(acc, modifiedValue, ...rest);
+  };
 };
 
 const utils = (confOptions = {}) => ({
@@ -97,7 +91,7 @@ const utils = (confOptions = {}) => ({
     min: (acc, value) => Math.min(acc || Infinity, value),
     max: (acc, value) => Math.max(acc || -Infinity, value),
   },
-  prepareOutput(arrObjData = [], options = {}, toGeneratedColumn = []) {
+  prepareOutput(arrObjData = [], toGeneratedColumn = [], options = {}) {
     const { sortField = null, sortType } = {
       ...outputOptions,
       ...confOptions,
@@ -109,7 +103,7 @@ const utils = (confOptions = {}) => ({
       for (const colFn of toGeneratedColumn) {
         const { reduce = null, reduceField } = colFn;
         if (typeof reduce === 'function' && reduceField) {
-          const reduceFn = createReduceProxy(reduce, reduceField);
+          const reduceFn = createReduceFieldWrapper(reduce, reduceField);
           colFn.reduceValue = arrObjData.reduce(reduceFn);
         } else {
           colFn.reduceValue = reduce;

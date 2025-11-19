@@ -1,18 +1,16 @@
 'use strict';
 
-const { read } = require("fs");
-
 module.exports = {
-  input: {
+  inputOptions: {
     filePath: './input/',
     type: 'csv',
   },
-  parse: {
+  parseOptions: {
     firstRowField: true,
     delimeter: ',',
     readLines: 10,
   },
-  output: {
+  outputOptions: {
     sortField: 'density',
     sortType: 'desc',
     filePath: './output/',
